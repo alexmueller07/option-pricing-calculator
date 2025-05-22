@@ -17,5 +17,17 @@ def calculatePutPrice(S, X, T, r, sigma):
     d2 = d1 - sigma*T**0.5
     return X*math.exp(-r*T)*norm.cdf(-d2) - S*norm.cdf(-d1)
 
+def calculateOptionPrice(S, X, T, r, sigma, side="C"):
+    if(size=="C"):
+        d1 = (math.log(S/X) + (r + (sigma**2)/2)*T) / (sigma*T**0.5)
+        d2 = d1 - sigma*T**0.5
+        return S*norm.cdf(d1) - X*math.exp(-r*T)*norm.cdf(d2) 
+    else if (size=="P"):
+        d1 = (math.log(S/X) + (r + (sigma**2)/2)*T) / (sigma*T**0.5)
+        d2 = d1 - sigma*T**0.5
+        return X*math.exp(-r*T)*norm.cdf(-d2) - S*norm.cdf(-d1)
+    else:
+        print("Please enter either C for Call or P for Put")
+        
 callPrice = calculateCallPrice(assetPrice, strikePrice, timeToMaturity, riskFreeRate, volatility)
 putPrice = calculatePutPrice(assetPrice, strikePrice, timeToMaturity, riskFreeRate, volatility)
