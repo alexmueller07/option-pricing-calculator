@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Pricing Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div style="padding: 0 1rem;">
+            <h1 class="page-title">Option Pricing Calculator</h1>
+            <div class="author-info">
+                Created by: Alexander Mueller
+                <a href="https://github.com/alexmueller07" target="_blank"><i class="fab fa-github"></i>Github</a>
+                <a href="https://www.linkedin.com/in/alexander-mueller-021658307/" target="_blank"><i class="fab fa-linkedin"></i>LinkedIn</a>
+                <i class="fas fa-envelope"></i>Email: amueller.code@gmail.com
+            </div>
+        </div>
+        <div class="row">
+            <!-- Input Section -->
+            <div class="col-md-4">
+                <div class="input-section">
+                    <div class="model-select mb-4">
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="modelSelect" id="blackScholesBtn" value="blackScholes" checked>
+                            <label class="btn btn-outline-primary" for="blackScholesBtn">Black-Scholes</label>
+                            
+                            <input type="radio" class="btn-check" name="modelSelect" id="monteCarloBtn" value="monteCarlo">
+                            <label class="btn btn-outline-primary" for="monteCarloBtn">Monte Carlo</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="assetPrice" class="form-label">Asset Price ($)</label>
+                        <input type="number" class="form-control" id="assetPrice" value="100.00" step="0.01" oninput="calculatePrices()">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="strikePrice" class="form-label">Strike Price ($)</label>
+                        <input type="number" class="form-control" id="strikePrice" value="100.00" step="0.01" oninput="calculatePrices()">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="timeToMaturity" class="form-label">Time to Maturity (years)</label>
+                        <input type="number" class="form-control" id="timeToMaturity" value="1.0" step="0.1" oninput="calculatePrices()">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="volatility" class="form-label">Volatility</label>
+                        <input type="number" class="form-control" id="volatility" value="0.25" step="0.01" oninput="calculatePrices()">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="riskFreeRate" class="form-label">Risk-Free Rate</label>
+                        <input type="number" class="form-control" id="riskFreeRate" value="0.1" step="0.01" oninput="calculatePrices()">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results and Heatmap Section -->
+            <div class="col-md-8">
+                <!-- Black-Scholes Results -->
+                <div id="blackScholesResults" class="result-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="price-label">Call Option Price</div>
+                            <div class="price-display call-price" id="callPrice">$0.00</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="price-label">Put Option Price</div>
+                            <div class="price-display put-price" id="putPrice">$0.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Profit/Loss Analysis Section -->
+                    <div class="heatmap-section">
+                        <div class="section-title">Option Price - Profit/Loss</div>
+                        <div class="row heatmap-controls">
+                            <div class="col-md-3 heatmap-input-group">
+                                <label for="minVol" class="form-label">Min Volatility</label>
+                                <input type="number" class="form-control" id="minVol" value="0.1" step="0.01">
+                            </div>
+                            <div class="col-md-3 heatmap-input-group">
+                                <label for="maxVol" class="form-label">Max Volatility</label>
+                                <input type="number" class="form-control" id="maxVol" value="0.4" step="0.01">
+                            </div>
+                            <div class="col-md-3 heatmap-input-group">
+                                <label for="minSpot" class="form-label">Min Spot Price</label>
+                                <input type="number" class="form-control" id="minSpot" value="80" step="0.01">
+                            </div>
+                            <div class="col-md-3 heatmap-input-group">
+                                <label for="maxSpot" class="form-label">Max Spot Price</label>
+                                <input type="number" class="form-control" id="maxSpot" value="120" step="0.01">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- Call Option Heatmap -->
+                            <div class="col-md-6">
+                                <div class="heatmap-input-group">
+                                    <label for="callBoughtPrice" class="form-label">Call Bought Price ($)</label>
+                                    <input type="number" class="form-control" id="callBoughtPrice" value="" step="0.01">
+                                </div>
+                                <div class="heatmap-container" id="callHeatmap"></div>
+                            </div>
+
+                            <!-- Put Option Heatmap -->
+                            <div class="col-md-6">
+                                <div class="heatmap-input-group">
+                                    <label for="putBoughtPrice" class="form-label">Put Bought Price ($)</label>
+                                    <input type="number" class="form-control" id="putBoughtPrice" value="" step="0.01">
+                                </div>
+                                <div class="heatmap-container" id="putHeatmap"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monte Carlo Results -->
+                <div id="monteCarloResults" class="result-section" style="display: none;">
+                    <div class="section-title">Monte Carlo Simulation Results</div>
+                    
+                    <!-- Number of Simulations Control -->
+                    <div class="mb-4">
+                        <label for="nSimulations" class="form-label">Number of Simulations</label>
+                        <select class="form-select" id="nSimulations" onchange="calculatePrices()">
+                            <option value="10000">10,000 (Super Fast)</option>
+                            <option value="100000" selected>100,000 (Fast)</option>
+                            <option value="1000000">1,000,000 (Balanced)</option>
+                            <option value="10000000">10,000,000 (Accurate)</option>
+                            <option value="100000000">100,000,000 (Very Accurate)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- European Options -->
+                    <div class="mc-section">
+                        <h4>European Options (Set Maturity Date)</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mc-card">
+                                    <h5>Call Option</h5>
+                                    <div class="mc-price" id="europeanCallPrice">$0.00</div>
+                                    <div class="mc-stats">
+                                        <div>Standard Error: <span id="europeanCallStdError">±$0.0000</span></div>
+                                        <div>95% Confidence: <span id="europeanCallConfInterval">±$0.0000</span></div>
+                                        <div>Computation Time: <span id="europeanCallTime">0.00s</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mc-card">
+                                    <h5>Put Option</h5>
+                                    <div class="mc-price" id="europeanPutPrice">$0.00</div>
+                                    <div class="mc-stats">
+                                        <div>Standard Error: <span id="europeanPutStdError">±$0.0000</span></div>
+                                        <div>95% Confidence: <span id="europeanPutConfInterval">±$0.0000</span></div>
+                                        <div>Computation Time: <span id="europeanPutTime">0.00s</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- American Options -->
+                    <div class="mc-section">
+                        <h4>American Options (Flexible Maturity Date)</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mc-card">
+                                    <h5>Call Option</h5>
+                                    <div class="mc-price" id="americanCallPrice">$0.00</div>
+                                    <div class="mc-stats">
+                                        <div>Standard Error: <span id="americanCallStdError">±$0.0000</span></div>
+                                        <div>95% Confidence: <span id="americanCallConfInterval">±$0.0000</span></div>
+                                        <div>Computation Time: <span id="americanCallTime">0.00s</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mc-card">
+                                    <h5>Put Option</h5>
+                                    <div class="mc-price" id="americanPutPrice">$0.00</div>
+                                    <div class="mc-stats">
+                                        <div>Standard Error: <span id="americanPutStdError">±$0.0000</span></div>
+                                        <div>95% Confidence: <span id="americanPutConfInterval">±$0.0000</span></div>
+                                        <div>Computation Time: <span id="americanPutTime">0.00s</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Greeks -->
+                    <div class="mc-section">
+                        <h4>Option Greeks (European Call)</h4>
+                        <div class="greeks-grid">
+                            <div class="greek-card">
+                                <div class="greek-label">Delta</div>
+                                <div class="greek-value" id="deltaValue">0.0000</div>
+                            </div>
+                            <div class="greek-card">
+                                <div class="greek-label">Gamma</div>
+                                <div class="greek-value" id="gammaValue">0.0000</div>
+                            </div>
+                            <div class="greek-card">
+                                <div class="greek-label">Vega</div>
+                                <div class="greek-value" id="vegaValue">0.0000</div>
+                            </div>
+                            <div class="greek-card">
+                                <div class="greek-label">Theta</div>
+                                <div class="greek-value" id="thetaValue">0.0000</div>
+                            </div>
+                            <div class="greek-card">
+                                <div class="greek-label">Rho</div>
+                                <div class="greek-value" id="rhoValue">0.0000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Model selection handler
+        document.querySelectorAll('input[name="modelSelect"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const model = this.value;
+                const blackScholesResults = document.getElementById('blackScholesResults');
+                const monteCarloResults = document.getElementById('monteCarloResults');
+                
+                if (model === 'blackScholes') {
+                    blackScholesResults.style.display = 'block';
+                    monteCarloResults.style.display = 'none';
+                } else {
+                    blackScholesResults.style.display = 'none';
+                    monteCarloResults.style.display = 'block';
+                }
+                
+                calculatePrices();
+            });
+        });
+
+        function calculatePrices() {
+            const model = document.querySelector('input[name="modelSelect"]:checked').value;
+            const data = {
+                model: model,
+                assetPrice: document.getElementById('assetPrice').value,
+                strikePrice: document.getElementById('strikePrice').value,
+                timeToMaturity: document.getElementById('timeToMaturity').value,
+                volatility: document.getElementById('volatility').value,
+                riskFreeRate: document.getElementById('riskFreeRate').value
+            };
+
+            // Check if any input is empty or invalid
+            if (!data.assetPrice || !data.strikePrice || !data.timeToMaturity || 
+                !data.volatility || !data.riskFreeRate) {
+                if (model === 'blackScholes') {
+                    document.getElementById('callPrice').textContent = '----';
+                    document.getElementById('putPrice').textContent = '----';
+                }
+                return;
+            }
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (model === 'blackScholes') {
+                    document.getElementById('callPrice').textContent = `$${result.callPrice.toFixed(2)}`;
+                    document.getElementById('putPrice').textContent = `$${result.putPrice.toFixed(2)}`;
+                } else {
+                    // Update European Call results
+                    document.getElementById('europeanCallPrice').textContent = `$${result.european.call.price.toFixed(2)}`;
+                    document.getElementById('europeanCallStdError').textContent = `$${result.european.call.std_error.toFixed(4)}`;
+                    document.getElementById('europeanCallConfInterval').textContent = `±$${result.european.call.conf_interval.toFixed(4)}`;
+                    document.getElementById('europeanCallTime').textContent = `${result.european.call.computation_time.toFixed(2)}s`;
+                    
+                    // Update European Put results
+                    document.getElementById('europeanPutPrice').textContent = `$${result.european.put.price.toFixed(2)}`;
+                    document.getElementById('europeanPutStdError').textContent = `$${result.european.put.std_error.toFixed(4)}`;
+                    document.getElementById('europeanPutConfInterval').textContent = `±$${result.european.put.conf_interval.toFixed(4)}`;
+                    document.getElementById('europeanPutTime').textContent = `${result.european.put.computation_time.toFixed(2)}s`;
+                    
+                    // Update American Call results
+                    document.getElementById('americanCallPrice').textContent = `$${result.american.call.price.toFixed(2)}`;
+                    document.getElementById('americanCallStdError').textContent = `$${result.american.call.std_error.toFixed(4)}`;
+                    document.getElementById('americanCallConfInterval').textContent = `±$${result.american.call.conf_interval.toFixed(4)}`;
+                    document.getElementById('americanCallTime').textContent = `${result.american.call.computation_time.toFixed(2)}s`;
+                    
+                    // Update American Put results
+                    document.getElementById('americanPutPrice').textContent = `$${result.american.put.price.toFixed(2)}`;
+                    document.getElementById('americanPutStdError').textContent = `$${result.american.put.std_error.toFixed(4)}`;
+                    document.getElementById('americanPutConfInterval').textContent = `±$${result.american.put.conf_interval.toFixed(4)}`;
+                    document.getElementById('americanPutTime').textContent = `${result.american.put.computation_time.toFixed(2)}s`;
+                    
+                    // Update Greeks
+                    document.getElementById('deltaValue').textContent = result.greeks.delta.toFixed(4);
+                    document.getElementById('gammaValue').textContent = result.greeks.gamma.toFixed(4);
+                    document.getElementById('vegaValue').textContent = result.greeks.vega.toFixed(4);
+                    document.getElementById('thetaValue').textContent = result.greeks.theta.toFixed(4);
+                    document.getElementById('rhoValue').textContent = result.greeks.rho.toFixed(4);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (model === 'blackScholes') {
+                    document.getElementById('callPrice').textContent = 'Error';
+                    document.getElementById('putPrice').textContent = 'Error';
+                }
+            });
+        }
+
+        // Store last auto-set values to avoid overwriting user edits
+        let lastAutoMinSpot = null, lastAutoMaxSpot = null, lastAutoMinVol = null, lastAutoMaxVol = null;
+
+        function autoSetHeatmapRanges() {
+            const mainSpot = parseFloat(document.getElementById('assetPrice').value);
+            const mainVol = parseFloat(document.getElementById('volatility').value);
+            if (!isNaN(mainSpot)) {
+                const minSpot = +(mainSpot * 0.8).toFixed(2);
+                const maxSpot = +(mainSpot * 1.2).toFixed(2);
+                const minSpotInput = document.getElementById('minSpot');
+                const maxSpotInput = document.getElementById('maxSpot');
+                // Only update if user hasn't changed from last auto-set
+                if (minSpotInput.value == lastAutoMinSpot || lastAutoMinSpot === null) {
+                    minSpotInput.value = minSpot;
+                    lastAutoMinSpot = minSpot;
+                }
+                if (maxSpotInput.value == lastAutoMaxSpot || lastAutoMaxSpot === null) {
+                    maxSpotInput.value = maxSpot;
+                    lastAutoMaxSpot = maxSpot;
+                }
+            }
+            if (!isNaN(mainVol)) {
+                const minVol = +(mainVol * 0.8).toFixed(4);
+                const maxVol = +(mainVol * 1.2).toFixed(4);
+                const minVolInput = document.getElementById('minVol');
+                const maxVolInput = document.getElementById('maxVol');
+                if (minVolInput.value == lastAutoMinVol || lastAutoMinVol === null) {
+                    minVolInput.value = minVol;
+                    lastAutoMinVol = minVol;
+                }
+                if (maxVolInput.value == lastAutoMaxVol || lastAutoMaxVol === null) {
+                    maxVolInput.value = maxVol;
+                    lastAutoMaxVol = maxVol;
+                }
+            }
+            updateHeatmaps();
+        }
+
+        function updateHeatmaps() {
+            const minVol = document.getElementById('minVol').value;
+            const maxVol = document.getElementById('maxVol').value;
+            const minSpot = document.getElementById('minSpot').value;
+            const maxSpot = document.getElementById('maxSpot').value;
+            const callBuyPrice = document.getElementById('callBoughtPrice').value;
+            const putBuyPrice = document.getElementById('putBoughtPrice').value;
+
+            // Make containers perfectly square
+            const callContainer = document.getElementById('callHeatmap');
+            const putContainer = document.getElementById('putHeatmap');
+            const width = callContainer.offsetWidth;
+            callContainer.style.height = width + 'px';
+            putContainer.style.height = width + 'px';
+
+            fetch('/heatmap-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    minVol, maxVol, minSpot, maxSpot, callBuyPrice, putBuyPrice
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const layout = {
+                    title: '',
+                    xaxis: { title: 'Spot Price', automargin: true },
+                    yaxis: { title: 'Volatility', automargin: true },
+                    autosize: false,
+                    width: width,
+                    height: width,
+                    margin: { l: 60, r: 20, t: 20, b: 60 }
+                };
+                const config = {responsive: true, staticPlot: false, displayModeBar: false};
+
+                // Custom colorscales
+                const profitColorscale = [
+                    [0, '#b30000'],   // Rich red (big loss)
+                    [0.25, '#ff6666'],// Light red
+                    [0.5, '#ffffcc'], // Near zero (yellow/white)
+                    [0.75, '#66ff66'],// Light green
+                    [1, '#008000']    // Rich green (big profit)
+                ];
+                const priceColorscale = [
+                    [0, '#b30000'],   // Rich red (cheap)
+                    [0.25, '#ff6666'],// Light red
+                    [0.5, '#ffffcc'], // Middle (yellow/white)
+                    [0.75, '#66ff66'],// Light green
+                    [1, '#008000']    // Rich green (expensive)
+                ];
+
+                Plotly.newPlot('callHeatmap', [{
+                    z: data.call,
+                    x: data.spotLabels,
+                    y: data.volLabels,
+                    type: 'heatmap',
+                    colorscale: callBuyPrice ? profitColorscale : priceColorscale,
+                    colorbar: { title: (callBuyPrice ? 'Profit/Loss' : 'Price') },
+                    zmid: callBuyPrice ? 0 : undefined,
+                    showscale: true,
+                    hoverongaps: false,
+                    text: data.call.map(row => row.map(v => v.toFixed(2))),
+                    hovertemplate: 'Spot: %{x}<br>Vol: %{y}<br>Value: %{z:.2f}<extra></extra>'
+                }], layout, config);
+
+                Plotly.newPlot('putHeatmap', [{
+                    z: data.put,
+                    x: data.spotLabels,
+                    y: data.volLabels,
+                    type: 'heatmap',
+                    colorscale: putBuyPrice ? profitColorscale : priceColorscale,
+                    colorbar: { title: (putBuyPrice ? 'Profit/Loss' : 'Price') },
+                    zmid: putBuyPrice ? 0 : undefined,
+                    showscale: true,
+                    hoverongaps: false,
+                    text: data.put.map(row => row.map(v => v.toFixed(2))),
+                    hovertemplate: 'Spot: %{x}<br>Vol: %{y}<br>Value: %{z:.2f}<extra></extra>'
+                }], layout, config);
+            });
+        }
+
+        // Initialize heatmaps when page loads
+        window.onload = function() {
+            calculatePrices();
+            autoSetHeatmapRanges();
+        };
+
+        // Update heatmaps when any relevant input changes
+        ['minVol','maxVol','minSpot','maxSpot','callBoughtPrice','putBoughtPrice'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateHeatmaps);
+        });
+
+        // Auto-update heatmap min/max when main values change
+        document.getElementById('assetPrice').addEventListener('input', autoSetHeatmapRanges);
+        document.getElementById('volatility').addEventListener('input', autoSetHeatmapRanges);
+    </script>
+</body>
+</html> 
