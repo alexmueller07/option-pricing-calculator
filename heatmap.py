@@ -10,8 +10,8 @@ min_spot = float(input("Enter minimum spot price (e.g., 80): "))
 max_spot = float(input("Enter maximum spot price (e.g., 120): "))
 
 # Get user inputs for buy prices (optional)
-call_buy_price = input("Enter call option buy price (press Enter to skip): ")
-put_buy_price = input("Enter put option buy price (press Enter to skip): ")
+call_buy_price = input("Enter call option buy price: ")
+put_buy_price = input("Enter put option buy price: ")
 
 # Convert buy prices to float if provided
 call_buy_price = float(call_buy_price) if call_buy_price else None
