@@ -9,7 +9,10 @@ Note: Will take a little bit to boot up as I am running it on a free hosting ser
 
 ## Recordings Showing all Important Parts of Project Running
 
-[Add screenshots or GIF of the application in action here]
+Black Scholes Model Option Pricing:
+![Recording1 (1)](https://github.com/user-attachments/assets/6c4366c2-9f2c-4b93-b49c-1297e9afdabf)
+
+Black Scholes Model Option Profit/Loss:
 
 ## Features
 
