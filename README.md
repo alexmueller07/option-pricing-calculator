@@ -2,6 +2,15 @@
 
 A web application for calculating option prices using both Black-Scholes and Monte Carlo simulation methods. This tool is designed for anyone interested in quantitative finance.
 
+## Live Demo
+
+[Try the live demo here](https://option-pricing-calculator.onrender.com/)
+Note: Will take a little bit to boot up as I am running it on a free hosting service. Once it boots up it will run fast. 
+
+## Recordings Showing all Important Parts of Project Running
+
+[Add screenshots or GIF of the application in action here]
+
 ## Features
 
 - **Multiple Pricing Models**:
@@ -12,11 +21,28 @@ A web application for calculating option prices using both Black-Scholes and Mon
 - **Confidence Intervals for Monte Carlo Results**
 - **Computation Time Tracking for Monte Carlo Simulation**
 
-## Live Demo
+## Usage
 
-[Try the live demo here](https://option-pricing-calculator.onrender.com/)
-Note: Will take a little bit to boot up as I am running it on a free hosting service. Once it boots up it will run fast. 
+1. Select your preferred pricing model (Black-Scholes or Monte Carlo)
+2. Enter the required parameters:
+   - Asset Price (S₀)
+   - Strike Price (K)
+   - Time to Maturity (T)
+   - Risk-Free Rate (r)
+   - Volatility (σ)
+   - Number of Simulations (for Monte Carlo)
+3. It will automatically calculate and display the answers on the right side of the screen.
+4. If you are using Black-Scholes model use the heatmap feature to visualize price variations and look at your P/L based on buy price.
+5. If you are using Monte Carlo look at the greeks at the bottom and look at the various bits of information it gives.
+   
+## Technical Details
 
+- This is a purely python program. HTML was only used for creating the webpage to display what the python backend calculated 
+- Built with Flask
+- Uses NumPy for numerical computations
+- Implements both Black-Scholes and Monte Carlo pricing methods
+- Features a responsive web interface using HTML and CSS
+  
 ## Installation
 
 1. Clone the repository:
@@ -46,32 +72,6 @@ python app.py
 ```
 
 The application will be available at `http://localhost:5000`
-
-## Usage
-
-1. Select your preferred pricing model (Black-Scholes or Monte Carlo)
-2. Enter the required parameters:
-   - Asset Price (S₀)
-   - Strike Price (K)
-   - Time to Maturity (T)
-   - Risk-Free Rate (r)
-   - Volatility (σ)
-   - Number of Simulations (for Monte Carlo)
-3. It will automatically calculate and display the answers on the right side of the screen.
-4. If you are using Black-Scholes model use the heatmap feature to visualize price variations and look at your P/L based on buy price.
-5. If you are using Monte Carlo look at the greeks at the bottom and look at the various bits of information it gives. 
-
-## Screenshots
-
-[Add screenshots or GIF of the application in action here]
-
-## Technical Details
-
-- This is a purely python program. HTML was only used for creating the webpage to display what the python backend calculated 
-- Built with Flask
-- Uses NumPy for numerical computations
-- Implements both Black-Scholes and Monte Carlo pricing methods
-- Features a responsive web interface using HTML and CSS
 
 ## Contributing
 
