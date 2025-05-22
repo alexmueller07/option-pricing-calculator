@@ -186,7 +186,160 @@ class MonteCarloOptionPricer:
             'conf_interval': conf_interval,
             'computation_time': computation_time
         }
-    
+
+    def price_option(self, type="european", callput="c"):
+        if(type=="european"):
+            if(callput="c"):
+                """Price a European call option using Monte Carlo simulation"""
+                start_time = time.time()
+                
+                # Generate final stock prices
+                ST = self.generate_paths()
+                
+                # Calculate payoffs
+                payoffs = np.maximum(ST - self.K, 0)
+                
+                # Discount payoffs
+                price = np.exp(-self.r * self.T) * np.mean(payoffs)
+                
+                # Calculate standard error
+                std_error = np.exp(-self.r * self.T) * np.std(payoffs) / np.sqrt(self.n_simulations)
+                
+                # Calculate 95% confidence interval
+                conf_interval = 1.96 * std_error
+                
+                computation_time = time.time() - start_time
+                
+                return {
+                    'price': price,
+                    'std_error': std_error,
+                    'conf_interval': conf_interval,
+                    'computation_time': computation_time
+                }
+            else if(callput="p"):
+                """Price a European put option using Monte Carlo simulation"""
+                start_time = time.time()
+                
+                # Generate final stock prices
+                ST = self.generate_paths()
+                
+                # Calculate payoffs
+                payoffs = np.maximum(self.K - ST, 0)
+                
+                # Discount payoffs
+                price = np.exp(-self.r * self.T) * np.mean(payoffs)
+                
+                # Calculate standard error
+                std_error = np.exp(-self.r * self.T) * np.std(payoffs) / np.sqrt(self.n_simulations)
+                
+                # Calculate 95% confidence interval
+                conf_interval = 1.96 * std_error
+                
+                computation_time = time.time() - start_time
+                
+                return {
+                    'price': price,
+                    'std_error': std_error,
+                    'conf_interval': conf_interval,
+                    'computation_time': computation_time
+                }
+        else if(type=="american"):
+            if(callput="c"):
+                """Price an American call option using Monte Carlo simulation with Longstaff-Schwartz method"""
+                start_time = time.time()
+                
+                # For non-dividend paying stocks, American call = European call
+                if self.q == 0:
+                    return self.price_european_call()
+                
+                # For dividend paying stocks, use binomial tree approximation
+                # This is a simplified version - in practice, you'd want to use a more sophisticated method
+                n_steps = 100
+                dt = self.T / n_steps
+                u = np.exp(self.sigma * np.sqrt(dt))
+                d = 1/u
+                p = (np.exp((self.r - self.q) * dt) - d) / (u - d)
+                
+                # Generate stock price tree
+                stock_tree = np.zeros((n_steps + 1, n_steps + 1))
+                stock_tree[0, 0] = self.S0
+                
+                for i in range(1, n_steps + 1):
+                    for j in range(i + 1):
+                        stock_tree[i, j] = self.S0 * (u ** (i - j)) * (d ** j)
+                
+                # Calculate option values at maturity
+                option_tree = np.zeros((n_steps + 1, n_steps + 1))
+                option_tree[n_steps, :] = np.maximum(stock_tree[n_steps, :] - self.K, 0)
+                
+                # Backward induction
+                for i in range(n_steps - 1, -1, -1):
+                    for j in range(i + 1):
+                        exercise_value = stock_tree[i, j] - self.K
+                        hold_value = np.exp(-self.r * dt) * (p * option_tree[i + 1, j] + (1 - p) * option_tree[i + 1, j + 1])
+                        option_tree[i, j] = max(exercise_value, hold_value)
+                
+                price = option_tree[0, 0]
+                
+                # Calculate standard error (approximate)
+                std_error = price * 0.01  # Simplified error estimate
+                conf_interval = 1.96 * std_error
+                
+                computation_time = time.time() - start_time
+                
+                return {
+                    'price': price,
+                    'std_error': std_error,
+                    'conf_interval': conf_interval,
+                    'computation_time': computation_time
+                }
+            else if(callput="p"):
+                """Price an American put option using Monte Carlo simulation with Longstaff-Schwartz method"""
+                start_time = time.time()
+                
+                # Use binomial tree approximation
+                n_steps = 100
+                dt = self.T / n_steps
+                u = np.exp(self.sigma * np.sqrt(dt))
+                d = 1/u
+                p = (np.exp((self.r - self.q) * dt) - d) / (u - d)
+                
+                # Generate stock price tree
+                stock_tree = np.zeros((n_steps + 1, n_steps + 1))
+                stock_tree[0, 0] = self.S0
+                
+                for i in range(1, n_steps + 1):
+                    for j in range(i + 1):
+                        stock_tree[i, j] = self.S0 * (u ** (i - j)) * (d ** j)
+                
+                # Calculate option values at maturity
+                option_tree = np.zeros((n_steps + 1, n_steps + 1))
+                option_tree[n_steps, :] = np.maximum(self.K - stock_tree[n_steps, :], 0)
+                
+                # Backward induction
+                for i in range(n_steps - 1, -1, -1):
+                    for j in range(i + 1):
+                        exercise_value = self.K - stock_tree[i, j]
+                        hold_value = np.exp(-self.r * dt) * (p * option_tree[i + 1, j] + (1 - p) * option_tree[i + 1, j + 1])
+                        option_tree[i, j] = max(exercise_value, hold_value)
+                
+                price = option_tree[0, 0]
+                
+                # Calculate standard error (approximate)
+                std_error = price * 0.01  # Simplified error estimate
+                conf_interval = 1.96 * std_error
+                
+                computation_time = time.time() - start_time
+                
+                return {
+                    'price': price,
+                    'std_error': std_error,
+                    'conf_interval': conf_interval,
+                    'computation_time': computation_time
+                }
+        else:
+            print("Please enter a valid param. 1st is self, 2nd is a type either american or european, and 3 is c for call p for put.")
+            
     def calculate_greeks(self, option_type='call', style='european'):
         """Calculate option Greeks using finite difference method"""
         # Use larger perturbations for more stable results
