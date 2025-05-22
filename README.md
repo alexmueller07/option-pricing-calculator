@@ -1,21 +1,21 @@
 # Option Pricing Calculator
 
-A sophisticated web application for calculating option prices using both Black-Scholes and Monte Carlo simulation methods. This tool is designed for financial analysts, traders, and students interested in quantitative finance.
+A web application for calculating option prices using both Black-Scholes and Monte Carlo simulation methods. This tool is designed for anyone interested in quantitative finance.
 
 ## Features
 
 - **Multiple Pricing Models**:
   - Black-Scholes model for European options
   - Monte Carlo simulation for both European and American options
-- **Comprehensive Greeks Calculation**
-- **Interactive Heatmap Visualization**
-- **Real-time Price Updates**
+- **Greeks Calculation**
+- **Interactive Heatmap Visualization With Profit and Loss**
 - **Confidence Intervals for Monte Carlo Results**
-- **Computation Time Tracking**
+- **Computation Time Tracking for Monte Carlo Simulation**
 
 ## Live Demo
 
 [Try the live demo here](https://option-pricing-calculator.onrender.com/)
+Note: Will take a little bit to boot up as I am running it on a free hosting service. Once it boots up it will run fast. 
 
 ## Installation
 
@@ -57,8 +57,9 @@ The application will be available at `http://localhost:5000`
    - Risk-Free Rate (r)
    - Volatility (σ)
    - Number of Simulations (for Monte Carlo)
-3. Click "Calculate" to get the option prices
-4. Use the heatmap feature to visualize price variations
+3. It will automatically calculate and display the answers on the right side of the screen.
+4. If you are using Black-Scholes model use the heatmap feature to visualize price variations and look at your P/L based on buy price.
+5. If you are using Monte Carlo look at the greeks at the bottom and look at the various bits of information it gives. 
 
 ## Screenshots
 
@@ -66,14 +67,15 @@ The application will be available at `http://localhost:5000`
 
 ## Technical Details
 
+- This is a purely python program. HTML was only used for creating the webpage to display what the python backend calculated 
 - Built with Flask
 - Uses NumPy for numerical computations
 - Implements both Black-Scholes and Monte Carlo pricing methods
-- Features a responsive web interface
+- Features a responsive web interface using HTML and CSS
 
 ## Contributing
 
-Feel free to submit issues and enhancement requests!
+Feel free to submit issues and enhancement requests! Also feel free to email me at amueller.code@gmail.com with anything.
 
 ## License
 
