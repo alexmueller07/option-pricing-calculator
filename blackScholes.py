@@ -1,3 +1,4 @@
+
 import math
 from scipy.stats import norm
 
@@ -31,3 +32,11 @@ def calculateOptionPrice(S, X, T, r, sigma, side="C"):
         
 callPrice = calculateCallPrice(assetPrice, strikePrice, timeToMaturity, riskFreeRate, volatility)
 putPrice = calculatePutPrice(assetPrice, strikePrice, timeToMaturity, riskFreeRate, volatility)
+
+#asduho asuhdouh asoudh aoush dus ofuhousa houh douah dosuhoasuh d
+#Wijsahdu hasiuhd uashdiuhsaoudhiu hiuash diuhiu haiuh iuhai sudhiuah sd
+# uashdiu hds aiui uashiudhiuash diuh i sadhi
+#O sdauih diusha iusdh
+# sauduhasdiuh asdu sauidh saiuhd iuahs diuhsa hdiu d d hdh dhhd  hdd 
+# ushadiu h39h3h ush aiudh98289 dh9sah d9uh|
+#OI8hs 8da h8d9ha 9fh9ahf98 ha89sfha89hf
