@@ -13,6 +13,10 @@ Black Scholes Model Option Pricing:
 ![Recording1 (1)](https://github.com/user-attachments/assets/6c4366c2-9f2c-4b93-b49c-1297e9afdabf)
 
 Black Scholes Model Option Profit/Loss:
+![Recording2](https://github.com/user-attachments/assets/0c69afa4-64b8-489e-bf96-8a95c47cf99b)
+
+Monte Carlo Simulation: 
+![Recording3](https://github.com/user-attachments/assets/f0d011ab-2ba7-4c22-9d7a-58332d81dfec)
 
 ## Features
 
@@ -75,6 +79,9 @@ python app.py
 ```
 
 The application will be available at `http://localhost:5000`
+
+## What is next
+The one thing I most hope to impliment in this project in the future is use Yahoo Finance API to allow to calculate option prices of real companies. I can then use this information to help build a trading strategy and I can make another project out of that by backtesting that strategy.
 
 ## Contributing
 
